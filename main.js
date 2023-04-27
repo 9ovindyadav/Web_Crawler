@@ -1,6 +1,7 @@
 // in node there is a global object called process and argv is a property to grab the cli input so syntex is process.argv
 //process.argv returns an array  1.index - interpreter name  2.index- name of our code  3.index- our actual input 
 const {crawlPage} = require("./crawl.js")
+const {printReport} = require("./report.js")
 
 const main = async ()=>{
  
@@ -20,9 +21,8 @@ console.log(`Starting crawl of ${baseURL}`);
 
 const pages = await crawlPage(baseURL,baseURL,{}); // it returns an object
 
-for(const page of Object.entries(pages)){
-    console.log(page);
-}
+printReport(pages);
+
 };
 
 main();
