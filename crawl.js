@@ -45,7 +45,31 @@ for(const linkElement of linkElements){
        return urls;
 }// input - string of html elements and base url , output- array of url strings
 
+
+const crawlPage = async (currentURL)=>{
+    console.log(`Actively Crawling ${currentURL}`)
+
+    try {
+        const resp = await fetch(currentURL);   // return resp object   
+
+        if(resp.status > 399){
+            console.log(`Error in fetch with status code ${resp.status} on page ${currentURL}`)
+            return 
+        }
+
+        const contentType = resp.headers.get("content-type");
+        if(!contentType.includes("text/html")){
+            console.log(`non html responsse, Content-type: ${contentType}, on page ${currentURL}`)
+            return
+        }
+         console.log(await resp.text());   //parsing as text
+        
+    } catch (error) {
+          console.log(`Error in fetch ${error.message}, on page ${currentURL} `);
+    }
+}
 module.exports ={
     normalizeURL,
     getUrlsFromHtml,
+    crawlPage,
 }// to export the function so that it is available to other files 
