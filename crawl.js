@@ -46,27 +46,51 @@ for(const linkElement of linkElements){
 }// input - string of html elements and base url , output- array of url strings
 
 
-const crawlPage = async (currentURL)=>{
-    console.log(`Actively Crawling ${currentURL}`)
+const crawlPage = async (baseURL,currentURL,pages)=>{
+
+const baseURLObj = new URL(baseURL);
+const currentUrlObj = new URL(currentURL);
+
+if (baseURLObj.hostname !== currentUrlObj.hostname){
+    return pages ;
+}
+
+const normalizedCurrentURL = normalizeURL(currentURL);
+if(pages[normalizedCurrentURL] > 0){
+    pages[normalizedCurrentURL]++ ;
+    return pages;
+}
+
+pages[normalizedCurrentURL] = 1 ;
+
+console.log(`Actively Crawling ${currentURL}`);
 
     try {
         const resp = await fetch(currentURL);   // return resp object   
 
         if(resp.status > 399){
             console.log(`Error in fetch with status code ${resp.status} on page ${currentURL}`)
-            return 
+            return pages;
         }
 
         const contentType = resp.headers.get("content-type");
         if(!contentType.includes("text/html")){
             console.log(`non html responsse, Content-type: ${contentType}, on page ${currentURL}`)
-            return
+            return pages;
         }
-         console.log(await resp.text());   //parsing as text
+         const htmlBody = await resp.text();   //parsing as text
+
+         const nextURLs = getUrlsFromHtml(htmlBody,baseURL);
+
+         for(const nextURL of nextURLs){
+            pages = await crawlPage(baseURL,nextURL,pages); // here crawlPage behaves as a recursive function a function which calls it self again and again
+         }
         
     } catch (error) {
           console.log(`Error in fetch ${error.message}, on page ${currentURL} `);
     }
+
+    return pages;
 }
 module.exports ={
     normalizeURL,

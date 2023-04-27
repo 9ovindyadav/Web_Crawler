@@ -2,7 +2,7 @@
 //process.argv returns an array  1.index - interpreter name  2.index- name of our code  3.index- our actual input 
 const {crawlPage} = require("./crawl.js")
 
-const main = ()=>{};
+const main = async ()=>{
  
 if(process.argv.length < 3){
     console.log("No website provided")
@@ -18,6 +18,11 @@ const baseURL = process.argv[2];
 
 console.log(`Starting crawl of ${baseURL}`);
 
-crawlPage(baseURL);
+const pages = await crawlPage(baseURL,baseURL,{}); // it returns an object
+
+for(const page of Object.entries(pages)){
+    console.log(page);
+}
+};
 
 main();
